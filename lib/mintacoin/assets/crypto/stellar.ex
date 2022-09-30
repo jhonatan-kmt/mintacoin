@@ -16,11 +16,18 @@ defmodule Mintacoin.Assets.Stellar do
 
   @impl true
   def create_asset(opts) do
-    [minter_secret_key: minter_secret_key, asset_code: asset_code, asset_supply: asset_supply] =
-      Keyword.take(opts, [:minter_secret_key, :asset_code, :asset_supply])
+    [
+      distributor_secret_key: distributor_secret_key,
+      issuer_secret_key: issuer_secret_key,
+      asset_code: asset_code,
+      asset_supply: asset_supply
+    ] =
+      Keyword.take(opts, [:issuer_secret_key, :distributor_secret_key, :asset_code, :asset_supply])
 
-    {issuer_pk, _issuer_secret_key} = issuer_keypair = fund_key_pair_from_system()
-    {distribution_pk, _sk} = distribution_keypair = KeyPair.from_secret_seed(minter_secret_key)
+    {issuer_pk, _issuer_secret_key} = issuer_keypair = KeyPair.from_secret_seed(issuer_secret_key)
+
+    {distribution_pk, _sk} =
+      distribution_keypair = KeyPair.from_secret_seed(distributor_secret_key)
 
     source_account = TxBuild.Account.new(issuer_pk)
 
@@ -57,13 +64,6 @@ defmodule Mintacoin.Assets.Stellar do
     envelope
     |> Horizon.Transactions.create()
     |> format_response()
-  end
-
-  @spec fund_key_pair_from_system() :: {public_key(), secret_key()}
-  defp fund_key_pair_from_system do
-    :mintacoin
-    |> Application.get_env(:stellar_fund_secret_key, nil)
-    |> KeyPair.from_secret_seed()
   end
 
   @spec format_response({status(), stellar_response()}) :: {:ok, AssetResponse.t()} | error()
