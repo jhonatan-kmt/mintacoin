@@ -20,6 +20,9 @@ config :mintacoin, MintacoinWeb.Endpoint,
   secret_key_base: "BaUrx1V02yCkmqNpsnmhRxluI5Qt0q6J5of+SWbvJI6kpde8nFb5MbGIYSaW/vYN",
   server: false
 
+# Execution environment
+config :mintacoin, environment: :test
+
 # Print only warnings and errors during test
 config :logger, level: :warn
 
@@ -28,9 +31,6 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Oban test configuration
 config :mintacoin, Oban, testing: :inline
-
-# Crypto implementations envs
-config :mintacoin, stellar_impl: Mintacoin.Accounts.StellarMock
 
 # Encryption variables for accounts signatures
 config :mintacoin, encryption_variable: "HQHSCWQ4HNBMLFUWHU2S7H3KGU"
