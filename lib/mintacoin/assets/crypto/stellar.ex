@@ -8,21 +8,16 @@ defmodule Mintacoin.Assets.Stellar do
 
   @type status :: :ok | :error
   @type stellar_response :: map()
-  @type public_key :: String.t()
-  @type secret_key :: String.t()
   @type error :: {:error, any()}
 
   @behaviour Mintacoin.Assets.Crypto.Spec
 
   @impl true
   def create_asset(opts) do
-    [
-      distributor_secret_key: distributor_secret_key,
-      issuer_secret_key: issuer_secret_key,
-      asset_code: asset_code,
-      asset_supply: asset_supply
-    ] =
-      Keyword.take(opts, [:issuer_secret_key, :distributor_secret_key, :asset_code, :asset_supply])
+    distributor_secret_key = Keyword.get(opts, :distributor_secret_key)
+    issuer_secret_key = Keyword.get(opts, :issuer_secret_key)
+    asset_code = Keyword.get(opts, :asset_code)
+    asset_supply = Keyword.get(opts, :asset_supply)
 
     {issuer_pk, _issuer_secret_key} = issuer_keypair = KeyPair.from_secret_seed(issuer_secret_key)
 
@@ -66,7 +61,8 @@ defmodule Mintacoin.Assets.Stellar do
     |> format_response()
   end
 
-  @spec format_response({status(), stellar_response()}) :: {:ok, AssetResponse.t()} | error()
+  @spec format_response(tx_response :: {status(), stellar_response()}) ::
+          {:ok, AssetResponse.t()} | error()
   defp format_response(
          {:ok,
           %Transaction{id: id, successful: successful, hash: hash, created_at: created_at} =
