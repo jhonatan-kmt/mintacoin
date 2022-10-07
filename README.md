@@ -1,4 +1,4 @@
-# Mintacoin
+# Mintacoin 2
 
 ![banner][banner-img]
 
