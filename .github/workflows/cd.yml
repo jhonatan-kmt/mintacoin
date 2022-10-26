@@ -1,7 +1,8 @@
 name: Mintacoin CD
 on:
-  push:
-    branches: "v0.2"
+  release:
+    types:
+      [published]
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
