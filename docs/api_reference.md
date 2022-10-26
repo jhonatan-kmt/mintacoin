@@ -28,7 +28,7 @@ A success response has the following format:
 
 | Parameter | Type    | Description                                                  |
 | --------- | ------- | ------------------------------------------------------------ |
-| `data`    | Map     | Contains the data returned by the endpoint you're accessing. |
+| `data`    | Object  | Contains the data returned by the endpoint you're accessing. |
 | `status`  | Integer | HTTP response status code.                                   |
 
 
@@ -69,9 +69,9 @@ curl -X POST \
 }
 ```
 
-| Param        | Description                                                         |
-| ------------ | ------------------------------------------------------------------- |
-| `blockchain` | The blockchain in which the account's first wallet will be created. |
+| Param        | Type   | Description                                                         |
+| ------------ | ------ | ------------------------------------------------------------------- |
+| `blockchain` | String | The blockchain in which the account's first wallet will be created. |
 
 > Blockchains supported: `stellar`.
 
@@ -127,9 +127,9 @@ curl -X POST \
 }
 ```
 
-| Param        | Description           |
-| ------------ | --------------------- |
-| `seed_words` | Account's seed words. |
+| Param        | Type   | Description           |
+| ------------ | ------ | --------------------- |
+| `seed_words` | String | Account's seed words. |
 
 ##### Response
 
@@ -147,6 +147,304 @@ curl -X POST \
 | Parameter   | Type   | Description                           |
 | ----------- | ------ | ------------------------------------- |
 | `signature` | String | Secret key of your Mintacoin account. |
+
+---
+
+#### **Create asset trustline**
+    
+Create an asset trustline to allow the account to hold an asset.
+
+##### Example requests
+
+HTTP request:
+
+```http
+POST /accounts/:address/assets/:asset_id/trust
+```
+
+Curl request:
+
+```bash
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"signature": "PSUQJNRDUZL7KLGB4O5FMN6M7XH3LTOWWU3IPGVKTWU7IBNHAQNQ"}' \
+     "https://sandbox.api.mintacoin.co/accounts/YYVLNUJFEW54QZIHWZTIBLAD52M5TSXOJAZP7FYJXC7TM7MQQDLQ/assets/317e8c9c-48ad-4513-8936-32646edbed9b/trust"
+```
+##### Body params
+
+```json
+{
+  "signature": "PSUQJNRDUZL7KLGB4O5FMN6M7XH3LTOWWU3IPGVKTWU7IBNHAQNQ"
+}
+```
+
+| Param       | Type   | Description                           |
+| ----------- | ------ | ------------------------------------- |
+| `signature` | String | Secret key of your Mintacoin account. |
+
+##### Response
+
+```json
+{
+  "data": {
+    "code": "MTK",
+    "id": "317e8c9c-48ad-4513-8936-32646edbed9b",
+    "supply": "123.542"
+  },
+  "status": 201
+}
+```
+##### Response data parameters
+
+| Parameter | Type   | Description                             |
+| --------- | ------ | --------------------------------------- |
+| `id`      | String | A trusted asset’s identifying id.       |
+| `code`    | String | A trusted asset’s identifying code.     |
+| `supply`  | String | The amount of the asset in the network. |
+
+---
+
+#### **Get associated assets**
+    
+Retrieve the assets associated with an account
+
+##### Example requests
+
+HTTP request:
+
+```http
+GET /accounts/:address/assets
+```
+
+Curl request:
+
+```bash
+curl -X GET \
+     -H 'Content-Type: application/json' \
+     "https://sandbox.api.mintacoin.co/accounts/YYVLNUJFEW54QZIHWZTIBLAD52M5TSXOJAZP7FYJXC7TM7MQQDLQ/assets"
+```
+##### Response
+
+```json
+{
+  "data": [
+    {
+      "asset": "MTK",
+      "asset_id": "438d075c-2b66-4841-bf92-2c9f346e16fa",
+      "balance": "0.0",
+      "blockchain": "stellar",
+      "minter": false
+    },
+    {
+      "asset": "NYY",
+      "asset_id": "be6bd87e-6956-4f2d-b316-f14ece2ca677",
+      "balance": "123.455",
+      "blockchain": "stellar",
+      "minter": true
+    }
+  ],
+  "status": 200
+}
+```
+##### Response data parameters
+
+| Parameter    | Type    | Description                                                                               |
+| ------------ | ------- | ----------------------------------------------------------------------------------------- |
+| `asset`      | String  | An asset’s identifying code.                                                              |
+| `asset_id`   | String  | An asset’s identifying id.                                                                |
+| `balance`    | String  | The balance of the asset on the user's account.                                           |
+| `blockchain` | String  | The name of the blockchain to which the asset belongs                                     |
+| `minter`     | Boolean | `True` if the user account is the owner of the asset. `False` if the asset is a trustline |
+
+---
+
+### Assets
+
+Group of endpoints to manage the asset resource.
+
+#### **Create asset**
+    
+Creates an asset on the given blockchain.
+
+##### Example requests
+
+HTTP request:
+
+```http
+POST /assets
+```
+
+Curl request:
+
+```bash
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"blockchain": "stellar", "address": "YYVLNUJFEW54QZIHWZTIBLAD52M5TSXOJAZP7FYJXC7TM7MQQDLQ", "signature": "PSUQJNRDUZL7KLGB4O5FMN6M7XH3LTOWWU3IPGVKTWU7IBNHAQNQ", "asset_code": "MTK", "supply": 123.542}' \
+     "https://sandbox.api.mintacoin.co/assets"
+```
+
+##### Body params
+
+```json
+{
+  "blockchain": "stellar", 
+  "address": "YYVLNUJFEW54QZIHWZTIBLAD52M5TSXOJAZP7FYJXC7TM7MQQDLQ", 
+  "signature": "PSUQJNRDUZL7KLGB4O5FMN6M7XH3LTOWWU3IPGVKTWU7IBNHAQNQ",
+  "asset_code": "MTK", 
+  "supply": 123.542
+}
+```
+
+| Param                   | Type   | Description                                                                                       |
+| ----------------------- | ------ | ------------------------------------------------------------------------------------------------- |
+| `blockchain` (optional) | String | The blockchain in which the asset will be created. Default value: `stellar`                       |
+| `address`               | String | The public key of your Mintacoin account. This account will be the owner of the asset.            |
+| `signature`             | String | Secret key of your Mintacoin account.                                                             |
+| `asset_code`            | String | An asset’s identifying code. This code must be alphanumeric and between 1 and 10 characters long. |
+| `supply`                | Number | The initial amount of the asset. This supply must be greater than zero                            |
+
+> Blockchains supported: `stellar`.
+
+##### Response
+
+```json
+{
+  "data": {
+    "code": "MTK",
+    "id": "317e8c9c-48ad-4513-8936-32646edbed9b",
+    "supply": "123.542"
+  },
+  "status": 201
+}
+```
+##### Response data parameters
+
+| Parameter | Type   | Description                             |
+| --------- | ------ | --------------------------------------- |
+| `id`      | String | An asset’s identifying id.              |
+| `code`    | String | An asset’s identifying code.            |
+| `supply`  | String | The amount of the asset in the network. |
+
+---
+
+#### **Get asset**
+    
+Retrieve information about an asset
+
+##### Example requests
+
+HTTP request:
+
+```http
+GET /assets/:id
+```
+
+Curl request:
+
+```bash
+curl -X GET \
+     -H 'Content-Type: application/json' \
+     "https://sandbox.api.mintacoin.co/assets/317e8c9c-48ad-4513-8936-32646edbed9b"
+```
+
+##### Response
+
+```json
+{
+  "data": {
+    "code": "MTK",
+    "id": "317e8c9c-48ad-4513-8936-32646edbed9b",
+    "supply": "123.542"
+  },
+  "status": 200
+}
+```
+##### Response data parameters
+
+| Parameter | Type   | Description                             |
+| --------- | ------ | --------------------------------------- |
+| `id`      | String | An asset’s identifying id.              |
+| `code`    | String | An asset’s identifying code.            |
+| `supply`  | String | The amount of the asset in the network. |
+
+---
+
+#### **Get asset issuer**
+    
+Retrieve the `address` from the issuer of the asset
+
+##### Example requests
+
+HTTP request:
+
+```http
+GET /assets/:id/issuer
+```
+
+Curl request:
+
+```bash
+curl -X GET \
+     -H 'Content-Type: application/json' \
+     "https://sandbox.api.mintacoin.co/assets/317e8c9c-48ad-4513-8936-32646edbed9b/issuer"
+```
+
+##### Response
+
+```json
+{
+  "data": {
+    "address": "YYVLNUJFEW54QZIHWZTIBLAD52M5TSXOJAZP7FYJXC7TM7MQQDLQ"
+  },
+  "status": 200
+}
+```
+##### Response data parameters
+
+| Parameter | Type   | Description                           |
+| --------- | ------ | ------------------------------------- |
+| `address` | String | Public key of the issuer of the asset |
+
+---
+
+#### **Get addresses associated with asset**
+    
+Retrieve the `addresses` associated with an asset
+
+##### Example requests
+
+HTTP request:
+
+```http
+GET /assets/:id/accounts
+```
+
+Curl request:
+
+```bash
+curl -X GET \
+     -H 'Content-Type: application/json' \
+     "https://sandbox.api.mintacoin.co/assets/317e8c9c-48ad-4513-8936-32646edbed9b/accounts"
+```
+
+##### Response
+
+```json
+{
+  "data": {
+    "addresses": [
+      "6GZTYIJSBPLTKOH3IXTPJNOR6FUQ3ANOF7G6EF3C2ADKQHTNJASA",
+      "YYVLNUJFEW54QZIHWZTIBLAD52M5TSXOJAZP7FYJXC7TM7MQQDLQ"
+    ]
+  },
+  "status": 200
+}
+```
+##### Response data parameters
+
+| Parameter   | Type  | Description                                 |
+| ----------- | ----- | ------------------------------------------- |
+| `addresses` | Array | List of addresses associated with the asset |
 
 ---
     
@@ -172,10 +470,15 @@ An error response has the following format:
 
 ##### Standard error responses
 
-| Code                   | Detail                                  | Status |
-| ---------------------- | --------------------------------------- | ------ |
-| `blockchain_not_found` | The introduced blockchain doesn't exist | 400    |
-| `decoding_error`       | Address or seed words are invalid       | 400    |
-| `invalid_address`      | The address is invalid                  | 400    |
-| `invalid_seed_words`   | The seed words are invalid              | 400    |
-| `encryption_error`     | Error during encryption                 | 400    |
+| Code                    | Detail                                                                           | Status |
+| ----------------------- | -------------------------------------------------------------------------------- | ------ |
+| `asset_not_found`       | The introduced asset doesn't exist                                               | 400    |
+| `blockchain_not_found`  | The introduced blockchain doesn't exist                                          | 400    |
+| `decoding_error`        | Address, signature or seed words are invalid                                     | 400    |
+| `encryption_error`      | Error during encryption                                                          | 400    |
+| `invalid_address`       | The address is invalid                                                           | 400    |
+| `invalid_seed_words`    | The seed words are invalid                                                       | 400    |
+| `invalid_address`       | The address is invalid                                                           | 400    |
+| `invalid_supply_format` | The introduced supply format is invalid. This must be a number greater than zero | 400    |
+| `wallet_not_found`      | The introduced address doesn't exist or doesn't have an associated blockchain    | 400    |
+
