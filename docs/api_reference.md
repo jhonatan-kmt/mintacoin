@@ -1,4 +1,3 @@
-
 ## REST API
 
 Minimalist API to run your crypto.
@@ -152,7 +151,9 @@ curl -X POST \
 
 #### **Create asset trustline**
     
-Create an asset trustline to allow the account to hold an asset.
+Create an asset trustline to allow the account to hold an asset. 
+
+The resulting response is the information of the asset requested to own.
 
 ##### Example requests
 
@@ -198,15 +199,15 @@ curl -X POST \
 
 | Parameter | Type   | Description                             |
 | --------- | ------ | --------------------------------------- |
-| `id`      | String | A trusted asset’s identifying id.       |
-| `code`    | String | A trusted asset’s identifying code.     |
+| `id`      | String | The asset’s identifying id.             |
+| `code`    | String | The asset’s identifying code.           |
 | `supply`  | String | The amount of the asset in the network. |
 
 ---
 
-#### **Get associated assets**
+#### **Get assets held by an account**
     
-Retrieve the assets associated with an account
+Retrieve the assets information held by a Mintacoin account.
 
 ##### Example requests
 
@@ -248,19 +249,21 @@ curl -X GET \
 ```
 ##### Response data parameters
 
-| Parameter    | Type    | Description                                                                               |
-| ------------ | ------- | ----------------------------------------------------------------------------------------- |
-| `asset`      | String  | An asset’s identifying code.                                                              |
-| `asset_id`   | String  | An asset’s identifying id.                                                                |
-| `balance`    | String  | The balance of the asset on the user's account.                                           |
-| `blockchain` | String  | The name of the blockchain to which the asset belongs                                     |
-| `minter`     | Boolean | `True` if the user account is the owner of the asset. `False` if the asset is a trustline |
+| Parameter    | Type    | Description                                                                                                   |
+| ------------ | ------- | ------------------------------------------------------------------------------------------------------------- |
+| `asset`      | String  | The asset’s identifying code.                                                                                 |
+| `asset_id`   | String  | The asset’s identifying id.                                                                                   |
+| `balance`    | String  | The current balance of the asset on the user's account.                                                       |
+| `blockchain` | String  | The name of the blockchain to which the asset belongs.                                                        |
+| `minter`     | Boolean | `true` if the user account is the issuer of the asset. <br> `false` if the user account only holds the asset. |
 
 ---
 
 ### Assets
 
-Group of endpoints to manage the asset resource.
+Group of endpoints to manage the asset resource. 
+
+It is the asset representation within a blockchain network, which could contain a commercial and economic value. Mintacoin will help you in the creation and management of your assets.
 
 #### **Create asset**
     
@@ -295,13 +298,13 @@ curl -X POST \
 }
 ```
 
-| Param                   | Type   | Description                                                                                       |
-| ----------------------- | ------ | ------------------------------------------------------------------------------------------------- |
-| `blockchain` (optional) | String | The blockchain in which the asset will be created. Default value: `stellar`                       |
-| `address`               | String | The public key of your Mintacoin account. This account will be the owner of the asset.            |
-| `signature`             | String | Secret key of your Mintacoin account.                                                             |
-| `asset_code`            | String | An asset’s identifying code. This code must be alphanumeric and between 1 and 10 characters long. |
-| `supply`                | Number | The initial amount of the asset. This supply must be greater than zero                            |
+| Param                   | Type   | Description                                                                                        |
+| ----------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `blockchain` (optional) | String | The blockchain in which the asset will be created. Default value: `stellar`                        |
+| `address`               | String | The public key of your Mintacoin account. This account will be the owner of the asset.             |
+| `signature`             | String | Secret key of your Mintacoin account.                                                              |
+| `asset_code`            | String | The asset's identifying code. This code must be alphanumeric and between 1 and 10 characters long. |
+| `supply`                | Number | The initial amount of the asset. This supply must be greater than zero.                            |
 
 > Blockchains supported: `stellar`.
 
@@ -321,15 +324,15 @@ curl -X POST \
 
 | Parameter | Type   | Description                             |
 | --------- | ------ | --------------------------------------- |
-| `id`      | String | An asset’s identifying id.              |
-| `code`    | String | An asset’s identifying code.            |
+| `id`      | String | The asset’s identifying id.             |
+| `code`    | String | The asset’s identifying code.           |
 | `supply`  | String | The amount of the asset in the network. |
 
 ---
 
 #### **Get asset**
     
-Retrieve information about an asset
+Retrieve the asset information by its asset id.
 
 ##### Example requests
 
@@ -363,15 +366,15 @@ curl -X GET \
 
 | Parameter | Type   | Description                             |
 | --------- | ------ | --------------------------------------- |
-| `id`      | String | An asset’s identifying id.              |
-| `code`    | String | An asset’s identifying code.            |
+| `id`      | String | The asset’s identifying id.             |
+| `code`    | String | The asset’s identifying code.           |
 | `supply`  | String | The amount of the asset in the network. |
 
 ---
 
 #### **Get asset issuer**
     
-Retrieve the `address` from the issuer of the asset
+Retrieve the `address` from the asset's issuer.
 
 ##### Example requests
 
@@ -401,15 +404,17 @@ curl -X GET \
 ```
 ##### Response data parameters
 
-| Parameter | Type   | Description                           |
-| --------- | ------ | ------------------------------------- |
-| `address` | String | Public key of the issuer of the asset |
+| Parameter | Type   | Description                         |
+| --------- | ------ | ----------------------------------- |
+| `address` | String | The public key of the asset issuer. |
 
 ---
 
 #### **Get addresses associated with asset**
     
-Retrieve the `addresses` associated with an asset
+Retrieve the `addresses` associated with an asset. 
+
+The resulting accounts are the holders of the requested asset.
 
 ##### Example requests
 
@@ -442,9 +447,9 @@ curl -X GET \
 ```
 ##### Response data parameters
 
-| Parameter   | Type  | Description                                 |
-| ----------- | ----- | ------------------------------------------- |
-| `addresses` | Array | List of addresses associated with the asset |
+| Parameter   | Type  | Description                                  |
+| ----------- | ----- | -------------------------------------------- |
+| `addresses` | Array | List of addresses associated with the asset. |
 
 ---
     
@@ -470,15 +475,14 @@ An error response has the following format:
 
 ##### Standard error responses
 
-| Code                    | Detail                                                                           | Status |
-| ----------------------- | -------------------------------------------------------------------------------- | ------ |
-| `asset_not_found`       | The introduced asset doesn't exist                                               | 400    |
-| `blockchain_not_found`  | The introduced blockchain doesn't exist                                          | 400    |
-| `decoding_error`        | Address, signature or seed words are invalid                                     | 400    |
-| `encryption_error`      | Error during encryption                                                          | 400    |
-| `invalid_address`       | The address is invalid                                                           | 400    |
-| `invalid_seed_words`    | The seed words are invalid                                                       | 400    |
-| `invalid_address`       | The address is invalid                                                           | 400    |
-| `invalid_supply_format` | The introduced supply format is invalid. This must be a number greater than zero | 400    |
-| `wallet_not_found`      | The introduced address doesn't exist or doesn't have an associated blockchain    | 400    |
-
+| Code                    | Detail                                                                            | Status |
+| ----------------------- | --------------------------------------------------------------------------------- | ------ |
+| `asset_not_found`       | The requested asset doesn't exist.                                                | 400    |
+| `blockchain_not_found`  | The introduced blockchain doesn't exist.                                          | 400    |
+| `decoding_error`        | Address, signature or seed words are invalid.                                     | 400    |
+| `encryption_error`      | Error during encryption.                                                          | 400    |
+| `invalid_address`       | The address is invalid.                                                           | 400    |
+| `invalid_seed_words`    | The seed words are invalid.                                                       | 400    |
+| `invalid_address`       | The address is invalid.                                                           | 400    |
+| `invalid_supply_format` | The introduced supply format is invalid. This must be a number greater than zero. | 400    |
+| `wallet_not_found`      | The introduced address doesn't exist or doesn't have an associated blockchain.    | 400    |
