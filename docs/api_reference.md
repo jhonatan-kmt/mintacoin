@@ -263,7 +263,17 @@ curl -X GET \
 
 Group of endpoints to manage the asset resource. 
 
-It is the asset representation within a blockchain network, which could contain a commercial and economic value. Mintacoin will help you in the creation and management of your assets.
+It is the asset representation of an active within a blockchain network, which could contain a commercial and economic value; This asset can be exchange by any other, and it can represent anything like:
+
+> 📍 **Assets examples**
+>
+> CUP - Coffee Cup
+>
+> MTK - Mintacoin Token
+>
+> USDC - Dollar
+
+Mintacoin will help you in the creation and management of your assets.
 
 #### **Create asset**
     
